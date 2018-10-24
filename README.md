@@ -16,6 +16,7 @@ Usage:
 PromQL
 
 Query Prometheus via it's API
+
 promql - Execute a PromQL query against Prometheus and return pretty json results
 promql alerts - Current alert counts from Prometheus
 promql cpu - Current averaged CPU metrics of all or partial host via NetData from Prometheus
