@@ -9,7 +9,7 @@ For many of the built-in commands, you'll need to configure Prometheus to scrape
 ```
 !repos install https://github.com/swarmstack/errbot-promql.git
 
-!plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/vi'}
+!plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/v1'}
 ```
 
 ## Usage:
