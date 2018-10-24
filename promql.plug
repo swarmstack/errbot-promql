@@ -1,0 +1,9 @@
+[Core]
+name = PromQL
+module = promql
+
+[Documentation]
+description = Interact with Prometheus via it's API
+
+[Python]
+version = 3
