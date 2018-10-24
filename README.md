@@ -5,7 +5,7 @@ An Errbot plugin that queries Prometheus via it's API
 Installation:
 
 ```
-!repos install https://github.com/swarmstack/promql.git
+!repos install https://github.com/swarmstack/errbot-promql.git
 
 !plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/vi'}
 ```
