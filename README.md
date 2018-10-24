@@ -2,7 +2,9 @@
 
 An Errbot plugin that queries Prometheus via it's API
 
-Installation:
+For many of the built-in commands, you'll need to configure Prometheus to scrape your Alertmanagers and also your hosts via [NetData](https://my-netdata.io/)
+
+## Installation:
 
 ```
 !repos install https://github.com/swarmstack/errbot-promql.git
@@ -10,7 +12,7 @@ Installation:
 !plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/vi'}
 ```
 
-Usage:
+## Usage:
 
 ```
 PromQL
