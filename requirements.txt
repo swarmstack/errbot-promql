@@ -1,4 +1,1 @@
-decimal
-json
 requests
-urllib
