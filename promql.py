@@ -14,7 +14,7 @@ class PromQL(BotPlugin):
 
     @botcmd
     def promql(self, msg, args):
-        """Execute a PromQL query against Prometheus and return pretty json results"""
+        """<query> Execute a PromQL query against Prometheus and return pretty json results"""
         try:
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(args)))
             if req.status_code == 200:
@@ -181,7 +181,7 @@ class PromQL(BotPlugin):
 
     @botcmd
     def promql_raw(self, msg, args):
-        """Execute a PromQL query against Prometheus and return raw json results"""
+        """<query> Execute a PromQL query against Prometheus and return raw json results"""
         try:
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(args)))
             if req.status_code == 200:
