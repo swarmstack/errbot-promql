@@ -49,7 +49,7 @@ You: promql lowest
 c3po: 1:46 PM
 Host: swarm02.example.com: 97.7% cpu idle
 Host: swarm03.example.com: 28269MB (93%) memory free/cached
-Host: swarm42.exanple.com: 2.2GB (22%) root filesystem free
+Host: swarm42.example.com: 2.2GB (22%) root filesystem free
 
 You: promql bottomk(1, alertmanager_alerts{state="active"})
 c3po: 1:46 PM
