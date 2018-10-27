@@ -51,7 +51,7 @@ Host: swarm02.example.com: 97.7% cpu idle
 Host: swarm03.example.com: 28269MB (93%) memory free/cached
 Host: swarm42.exanple.com: 2.2GB (22%) root filesystem free
 
-You: promql alertmanager_alerts{state="active"}
+You: promql bottomk(1, alertmanager_alerts{state="active"})
 c3po: 1:46 PM
 {
 "status": "success",
@@ -66,22 +66,10 @@ c3po: 1:46 PM
                 "state": "active"
             },
             "value": [
-                1540670158.278,
-                "0"
-            ]
-        },
-        {
-            "metric": {
-                "__name__": "alertmanager_alerts",
-                "instance": "10.0.6.161:9093",
-                "job": "alertmanagerB",
-                "state": "active"
-            },
-            "value": [
-                1540670158.278,
+                1540670301.383,
                 "0"
             ]
         }
     ]
 }
-```
+}
