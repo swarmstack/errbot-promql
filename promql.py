@@ -163,10 +163,10 @@ class PromQL(BotPlugin):
         return
 
     @botcmd
-    def promql_memfree(self):
+    def promql_memfree(self, msg, args):
         """Current free memory of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'floor( 100 / sum(netdata_system_ram_MB_average){job=~".*%s.*"} by (job) * sum(netdata_system_ram_MB_average{dimension=~"free|cached",{job=~".*%s.*"} ) by (job) )' % (args.strip(), args.strip())
+            str1 = 'floor( 100 / sum(netdata_system_ram_MB_average{job=~".*%s.*"}) by (job) * sum(netdata_system_ram_MB_average{dimension=~"free|cached",job=~".*%s.*"} ) by (job) )' % (args.strip(), args.strip())
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
