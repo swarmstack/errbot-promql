@@ -39,13 +39,13 @@ class PromQL(BotPlugin):
             else:
                 return "got a non-200 response from %s" % req.url
         except ValidationException as exc:
-            return 'failed to perform promql query: %s with exception: %s' % (args, exc)
+            return 'failed to perform promql_alerts with exception: %s' % exc
 
     @botcmd
     def promql_cpu(self, msg, args):
         """Current averaged CPU metrics of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'avg(netdata_cpu_cpu_percentage_average{job=~".*%s.*"}) by (dimension)' % args
+            str1 = 'avg(netdata_cpu_cpu_percentage_average{job=~".*%s.*"}) by (dimension)' % args.strip()
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
@@ -56,13 +56,13 @@ class PromQL(BotPlugin):
             else:
                 return "got a non-200 response from %s" % req.url
         except ValidationException as exc:
-            return 'failed to perform promql query: %s with exception: %s' % (args, exc)
+            return 'failed to perform promql_cpu with args %s, exception: %s' % (args, exc)
 
     @botcmd
     def promql_cpufree(self, msg, args):
         """Current free CPU of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'avg(netdata_cpu_cpu_percentage_average{dimension="idle",job=~".*%s.*"}) by (job)' % args
+            str1 = 'avg(netdata_cpu_cpu_percentage_average{dimension="idle",job=~".*%s.*"}) by (job)' % args.strip()
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
@@ -73,7 +73,7 @@ class PromQL(BotPlugin):
             else:
                 return "got a non-200 response from %s" % req.url
         except ValidationException as exc:
-            return 'failed to perform promql query: %s with exception: %s' % (args, exc)
+            return 'failed to perform promql_cpufree with args %s, exception: %s' % (args, exc)
 
     def lowestcpufree(self):
         """Current lowest free CPU host via NetData from Prometheus"""
@@ -163,21 +163,29 @@ class PromQL(BotPlugin):
         return
 
     @botcmd
-    def promql_memfree(self, msg, args):
+    def promql_memfree(self):
         """Current free memory of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'avg(netdata_mem_available_MB_average{job=~".*%s.*"}) by (job)' % args
+            str1 = 'floor( 100 / sum(netdata_system_ram_MB_average){job=~".*%s.*"} by (job) * sum(netdata_system_ram_MB_average{dimension=~"free|cached",{job=~".*%s.*"} ) by (job) )' % (args.strip(), args.strip())
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
-                    value = decimal.Decimal(str(i['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** 0)
-                    yield "Host %s: %sMB" % ( str(i['metric']['job']).replace('netdata-','') , value) 
+                    str1 = 'netdata_mem_available_MB_average{job="%s"}' % i['metric']['job']
+                    req2 = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
+                    if req2.status_code == 200:
+                        req2 = req2.json()
+                        for j in req2['data']['result']:
+                            memavail = decimal.Decimal(str(j['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** 0)
+                            memavailpercent = str(i['value'][-1:]).replace('[\'','').replace('\']','')
+                            yield "Host: %s: %sMB (%s%%) memory free/cached" % ( str(i['metric']['job']).replace('netdata-','') , memavail, memavailpercent) 
+                    else:
+                        return "got a non-200 response from %s" % req2.url
                 return
             else:
                 return "got a non-200 response from %s" % req.url
         except ValidationException as exc:
-            return 'failed to perform promql query: %s with exception: %s' % (args, exc)
+            return 'failed to perform promql_cpufree with args %s, exception: %s' % (args, exc)
 
     @botcmd
     def promql_raw(self, msg, args):
@@ -214,7 +222,7 @@ class PromQL(BotPlugin):
             else:
                 return "got a non-200 response from %s" % req.url
         except ValidationException as exc:
-            return 'failed to perform promql query: %s with exception: %s' % (args, exc)
+            return 'failed to perform promql_rootfree with exception: %s' % exc
 
 
 #promql alertcounts
