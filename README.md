@@ -11,7 +11,7 @@ If you need an Errbot docker image, see [swarmstack/errbot-docker](https://githu
 ```
 repos install https://github.com/swarmstack/errbot-promql
 
-plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/v1'}
+plugin config PromQL {'PROMQL_URL': 'http://prometheus:9090/api/v1'}
 ```
 
 ## Updating
