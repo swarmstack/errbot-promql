@@ -4,7 +4,9 @@ An Errbot plugin that queries Prometheus via it's API
 
 For many of the built-in commands, you'll need to configure Prometheus to scrape your Alertmanagers and also your hosts via [NetData](https://my-netdata.io/)
 
-If you need an Errbot docker image, see [swarmstack/errbot-docker](https://github.com/swarmstack/errbot-docker). The default configuration string displayed by calling _!plugin config PromQL_ can be used as-shown for [swarmstack](https://github.com/swarmstack/swarmstack) users. Otherwise, replace _task.prometheus_ (below) with your Prometheus _server IP or hostname_.
+If you need an Errbot docker image, see [swarmstack/errbot-docker](https://github.com/swarmstack/errbot-docker), you will need to configure your Errbot's webserver (documented in that project) before proceeding to configure Errbot plugins such as errbot-promql below.
+
+The default configuration string displayed by calling _!plugin config PromQL_ can be used as-shown below for [swarmstack](https://github.com/swarmstack/swarmstack) users. Otherwise, replace _http://prometheus_ (below) with your Prometheus _server IP or hostname_.
 
 ## Installation
 
