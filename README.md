@@ -14,6 +14,12 @@ repos install https://github.com/swarmstack/errbot-promql
 plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/v1'}
 ```
 
+## Updating
+
+```
+repos update swarmstack/errbot-promql
+```
+
 ## Usage
 
 ```
