@@ -2,7 +2,7 @@
 
 An Errbot plugin that queries Prometheus via it's API
 
-For many of the built-in commands, you'll need to configure Prometheus to scrape your Alertmanagers and also your hosts via [NetData](https://my-netdata.io/)
+For many of the built-in promql commands to work, you'll need to configure your Prometheus instance to scrape Alertmanagers as well as your hosts via [NetData](https://my-netdata.io/). This is done by default for [swarmstack](https://github.com/swarmstack/swarmstack) users who have installed Prometheus/Alertmanager/NetData using the swarmstack.yml playbook. If you wish to modify the included commands, consider forking this Github repo and altering promql.py for your own needs. The swarmstack [errbot-docker](https://github.com/swarmstack/errbot-docker) project also includes facilities for you to install locally-modified plugins directly into a Docker container if hosting your own copy via public or private repo isn't an option for you.
 
 If you need an Errbot docker image, see [swarmstack/errbot-docker](https://github.com/swarmstack/errbot-docker), you will need to configure your Errbot's webserver (documented in that project) before proceeding to configure Errbot plugins such as errbot-promql below.
 
