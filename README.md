@@ -2,16 +2,24 @@
 
 An Errbot plugin that queries Prometheus via it's API
 
-For many of the built-in commands, you'll need to configure Prometheus to scrape your Alertmanagers and also your hosts via [NetData](https://my-netdata.io/)
+For many of the built-in promql commands to work, you'll need to configure your Prometheus instance to scrape Alertmanagers as well as your hosts via [NetData](https://my-netdata.io/). This is done by default for [swarmstack](https://github.com/swarmstack/swarmstack) users who have installed Prometheus/Alertmanager/NetData using the swarmstack.yml playbook. If you wish to modify the included commands, consider forking this Github repo and altering promql.py for your own needs. The swarmstack [errbot-docker](https://github.com/swarmstack/errbot-docker) project also includes facilities for you to install locally-modified plugins directly into a Docker container if hosting your own copy via public or private repo isn't an option for you.
 
-If you need an Errbot docker image, see [swarmstack/errbot-docker](https://github.com/swarmstack/errbot-docker). The default configuration string displayed by calling _!plugin config PromQL_ can be used as-shown for [swarmstack](https://github.com/swarmstack/swarmstack) users. Otherwise, replace _task.prometheus_ (below) with your Prometheus _server IP or hostname_.
+If you need an Errbot docker image, see [swarmstack/errbot-docker](https://github.com/swarmstack/errbot-docker), you will need to configure your Errbot's webserver (documented in that project) before proceeding to configure Errbot plugins such as errbot-promql below.
+
+The default configuration string displayed by calling _!plugin config PromQL_ can be used as-shown below for [swarmstack](https://github.com/swarmstack/swarmstack) users. Otherwise, replace _http://prometheus_ (below) with your Prometheus _server IP or hostname_.
 
 ## Installation
 
 ```
 repos install https://github.com/swarmstack/errbot-promql
 
-plugin config PromQL {'PROMQL_URL': 'http://tasks.prometheus:9090/api/v1'}
+plugin config PromQL {'PROMQL_URL': 'http://prometheus:9090/api/v1'}
+```
+
+## Updating
+
+```
+repos update swarmstack/errbot-promql
 ```
 
 ## Usage
