@@ -45,7 +45,7 @@ class PromQL(BotPlugin):
     def promql_cpu(self, msg, args):
         """Current averaged CPU metrics of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'avg(netdata_cpu_cpu_percentage_average{job=~".*%s.*"}) by (dimension)' % args.strip()
+            str1 = 'avg(netdata_cpu_cpu_percentage_average{instance=~".*%s.*"}) by (dimension)' % args.strip()
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
@@ -62,13 +62,13 @@ class PromQL(BotPlugin):
     def promql_cpufree(self, msg, args):
         """Current free CPU of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'avg(netdata_cpu_cpu_percentage_average{dimension="idle",job=~".*%s.*"}) by (job)' % args.strip()
+            str1 = 'avg(netdata_cpu_cpu_percentage_average{dimension="idle",instance=~".*%s.*"}) by (instance)' % args.strip()
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
                     cpuidle = decimal.Decimal(str(i['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** -1)
-                    yield "Host: %s: %s%% cpu idle" % ( str(i['metric']['job']).replace('netdata-','') , cpuidle) 
+                    yield "Host: %s: %s%% cpu idle" % ( str(i['metric']['instance']), cpuidle) 
                 return
             else:
                 return "got a non-200 response from %s" % req.url
@@ -78,12 +78,12 @@ class PromQL(BotPlugin):
     def lowestcpufree(self):
         """Current lowest free CPU host via NetData from Prometheus"""
         try:
-            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('bottomk(1, avg(netdata_cpu_cpu_percentage_average{dimension="idle"}) by (job) )')))
+            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('bottomk(1, avg(netdata_cpu_cpu_percentage_average{dimension="idle"}) by (instance) )')))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
                     cpuidle = decimal.Decimal(str(i['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** -1)
-                    return "Host: %s: %s%% cpu idle" % ( str(i['metric']['job']).replace('netdata-','') , cpuidle) 
+                    return "Host: %s: %s%% cpu idle" % ( str(i['metric']['instance']), cpuidle) 
                 return
             else:
                 return "got a non-200 response from %s" % req.url
@@ -93,18 +93,18 @@ class PromQL(BotPlugin):
     def lowestmemfree(self):
         """Current lowest free memory NetData from Prometheus"""
         try:
-            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('floor( bottomk(1, 100 / sum(netdata_system_ram_MiB_average) by (job) * sum(netdata_system_ram_MiB_average{dimension=~"free|cached"} ) by (job) ) )')))
+            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('floor( bottomk(1, 100 / sum(netdata_system_ram_MiB_average) by (instance) * sum(netdata_system_ram_MiB_average{dimension=~"free|cached"} ) by (instance) ) )')))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
-                    str1 = 'netdata_mem_available_MiB_average{job="%s"}' % i['metric']['job']
+                    str1 = 'netdata_mem_available_MiB_average{instance="%s"}' % i['metric']['instance']
                     req2 = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
                     if req2.status_code == 200:
                         req2 = req2.json()
                         for j in req2['data']['result']:
                             memavail = decimal.Decimal(str(j['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** 0)
                             memavailpercent = str(i['value'][-1:]).replace('[\'','').replace('\']','')
-                            return "Host: %s: %sMB (%s%%) memory free/cached" % ( str(i['metric']['job']).replace('netdata-','') , memavail, memavailpercent) 
+                            return "Host: %s: %sMB (%s%%) memory free/cached" % ( str(i['metric']['instance']), memavail, memavailpercent) 
                     else:
                         return "got a non-200 response from %s" % req2.url
                 return
@@ -116,18 +116,18 @@ class PromQL(BotPlugin):
     def lowestrootfree(self):
         """Current lowest free root filesystem via NetData from Prometheus"""
         try:
-            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('floor( bottomk(1, 100 / sum(netdata_disk_space_GiB_average{family="/"}) by (job) * sum(netdata_disk_space_GiB_average{family="/",dimension="avail"} ) by (job) ) )')))
+            req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus('floor( bottomk(1, 100 / sum(netdata_disk_space_GiB_average{family="/"}) by (instance) * sum(netdata_disk_space_GiB_average{family="/",dimension="avail"} ) by (instance) ) )')))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
-                    str1 = 'netdata_disk_space_GiB_average{job="%s", family="/", dimension="avail"}' % i['metric']['job']
+                    str1 = 'netdata_disk_space_GiB_average{instance="%s", family="/", dimension="avail"}' % i['metric']['instance']
                     req2 = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
                     if req2.status_code == 200:
                         req2 = req2.json()
                         for j in req2['data']['result']:
                             diskavail = decimal.Decimal(str(j['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** -1)
                             diskavailpercent = str(i['value'][-1:]).replace('[\'','').replace('\']','')
-                            return "Host: %s: %sGB (%s%%) root filesystem free" % ( str(i['metric']['job']).replace('netdata-','') , diskavail, diskavailpercent) 
+                            return "Host: %s: %sGB (%s%%) root filesystem free" % ( str(i['metric']['instance']), diskavail, diskavailpercent) 
                     else:
                         return "got a non-200 response from %s" % req2.url
                 return
@@ -166,19 +166,19 @@ class PromQL(BotPlugin):
     def promql_memfree(self, msg, args):
         """Current free memory of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'floor( 100 / sum(netdata_system_ram_MiB_average{job=~".*%s.*"}) by (job) * sum(netdata_system_ram_MiB_average{dimension=~"free|cached",job=~".*%s.*"} ) by (job) )' % (args.strip(), args.strip())
+            str1 = 'floor( 100 / sum(netdata_system_ram_MiB_average{instance=~".*%s.*"}) by (instance) * sum(netdata_system_ram_MiB_average{dimension=~"free|cached",instance=~".*%s.*"} ) by (instance) )' % (args.strip(), args.strip())
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
-                    str1 = 'netdata_mem_available_MiB_average{job="%s"}' % i['metric']['job']
+                    str1 = 'netdata_mem_available_MiB_average{instance="%s"}' % i['metric']['instance']
                     req2 = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
                     if req2.status_code == 200:
                         req2 = req2.json()
                         for j in req2['data']['result']:
                             memavail = decimal.Decimal(str(j['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** 0)
                             memavailpercent = str(i['value'][-1:]).replace('[\'','').replace('\']','')
-                            yield "Host: %s: %sMB (%s%%) memory free/cached" % ( str(i['metric']['job']).replace('netdata-','') , memavail, memavailpercent) 
+                            yield "Host: %s: %sMB (%s%%) memory free/cached" % ( str(i['metric']['instance']) , memavail, memavailpercent) 
                     else:
                         return "got a non-200 response from %s" % req2.url
                 return
@@ -203,19 +203,19 @@ class PromQL(BotPlugin):
     def promql_rootfree(self, msg, args):
         """Current free root filesystem of all or partial host via NetData from Prometheus"""
         try:
-            str1 = 'floor( 100 / sum(netdata_disk_space_GiB_average{family="/",job=~".*%s.*"}) by (job) * sum(netdata_disk_space_GiB_average{family="/",dimension="avail",job=~".*%s.*"} ) by (job) )' % (args.strip(), args.strip())
+            str1 = 'floor( 100 / sum(netdata_disk_space_GiB_average{family="/",instance=~".*%s.*"}) by (instance) * sum(netdata_disk_space_GiB_average{family="/",dimension="avail",instance=~".*%s.*"} ) by (instance) )' % (args.strip(), args.strip())
             req = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
             if req.status_code == 200:
                 req = req.json()
                 for i in req['data']['result']:
-                    str1 = 'netdata_disk_space_GiB_average{job="%s", family="/", dimension="avail"}' % i['metric']['job']
+                    str1 = 'netdata_disk_space_GiB_average{instance="%s", family="/", dimension="avail"}' % i['metric']['instance']
                     req2 = requests.get('%s/query?query=%s' % (self.config['PROMQL_URL'], urllib.parse.quote_plus(str1)))
                     if req2.status_code == 200:
                         req2 = req2.json()
                         for j in req2['data']['result']:
                             diskavail = decimal.Decimal(str(j['value'][-1:]).replace('[\'','').replace('\']','')).quantize(decimal.Decimal(10) ** -1)
                             diskavailpercent = str(i['value'][-1:]).replace('[\'','').replace('\']','')
-                            yield "Host: %s: %sGB (%s%%) root filesystem free" % (str(i['metric']['job']).replace('netdata-','') , diskavail, diskavailpercent) 
+                            yield "Host: %s: %sGB (%s%%) root filesystem free" % (str(i['metric']['instance']), diskavail, diskavailpercent) 
                     else:
                         return "got a non-200 response from %s" % req2.url
                 return
@@ -293,7 +293,7 @@ class PromQL(BotPlugin):
 #       'result':[
 #          {
 #             'metric':{
-#                'job':'swarm02.example.com'
+#                'instance':'swarm02.example.com'
 #             },
 #             'value':[
 #                1540398950.395,
@@ -306,7 +306,7 @@ class PromQL(BotPlugin):
 
 
 #promql cpu host
-# avg(netdata_cpu_cpu_percentage_average{job=~".*HOSTNAME.*"}) by (dimension)
+# avg(netdata_cpu_cpu_percentage_average{instance=~".*HOSTNAME.*"}) by (dimension)
 # {
 #    'status':'success',
 #    'data':{
